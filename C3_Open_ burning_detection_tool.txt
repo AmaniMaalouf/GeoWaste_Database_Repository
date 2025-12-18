@@ -1,0 +1,166 @@
+/*************** LOAD DATA ****************/
+// Load dumpsite polygons (CRS: WGS84) and update the file path according to your working directory (replace 'user' with your own directory name) 
+var dumpsites = ee.FeatureCollection('projects/user/assets/Dumpsite_polygons_final');
+// Load VIIRS FIRMS fire data for 2020-2024 uploaded as a shapefile and replace 'user' with your own directory name
+// ---- VIIRS J1V points for 2020–2024 (use constant asset IDs) ----
+var fc2020 = ee.FeatureCollection('projects/user/assets/DL_FIRE_J1V-C2_2020');
+var fc2021 = ee.FeatureCollection('projects/user/assets/DL_FIRE_J1V-C2_2021');
+var fc2022 = ee.FeatureCollection('projects/user/assets/DL_FIRE_J1V-C2_2022');
+var fc2023 = ee.FeatureCollection('projects/user/assets/DL_FIRE_J1V-C2_2023');
+var fc2024 = ee.FeatureCollection('projects/user/assets/DL_FIRE_J1V-C2_2024');
+
+// fields
+var CONF_FIELD = 'CONFIDENCE'; // 'l','n','h'
+var TYPE_FIELD = 'TYPE';       // 0,1,2,3
+
+// helper: add numeric confidence 0/1/2 and ensure WGS84, add year
+function prep(fc, year) {
+  return fc
+    .map(function(f){
+      var g = ee.Geometry(f.geometry()).transform('EPSG:4326', 1);
+      return f.setGeometry(g);
+    })
+    .map(function(f){
+      var conf = f.get(CONF_FIELD);
+      var cnum = ee.Number(
+        ee.Algorithms.If(
+          ee.Algorithms.IsEqual(conf, null), null,
+          ee.Algorithms.If(ee.String(conf).toLowerCase().compareTo('l').eq(0), 0,
+            ee.Algorithms.If(ee.String(conf).toLowerCase().compareTo('n').eq(0), 1,
+              ee.Algorithms.If(ee.String(conf).toLowerCase().compareTo('h').eq(0), 2, null)
+            )
+          )
+        )
+      );
+      return f.set({'conf_num': cnum, 'year': year});
+    });
+}
+
+// prepare each year
+fc2020 = prep(fc2020, 2020);
+fc2021 = prep(fc2021, 2021);
+fc2022 = prep(fc2022, 2022);
+fc2023 = prep(fc2023, 2023);
+fc2024 = prep(fc2024, 2024);
+
+// merge all years
+var firesAll = fc2020.merge(fc2021).merge(fc2022).merge(fc2023).merge(fc2024);
+
+// list of years
+var YEARS = ee.List([2020, 2021, 2022, 2023, 2024]);
+
+/*************** ANALYSIS ****************/
+
+// map a numeric confidence to a label
+function labelFromMean(mean) {
+  return ee.String(
+    ee.Algorithms.If(ee.Algorithms.IsEqual(mean, null), '',
+      ee.Algorithms.If(ee.Number(mean).lt(0.5), 'low',
+        ee.Algorithms.If(ee.Number(mean).lt(1.5), 'nominal', 'high')
+      )
+    )
+  );
+}
+
+// type code -> description
+var TYPE_DESC = ee.Dictionary({
+  '0': 'presumed vegetation fire',
+  '1': 'active volcano',
+  '2': 'other static land source',
+  '3': 'offshore detection (over water)'
+});
+
+function analyze(site) {
+  var poly    = site.geometry();
+  var area100 = poly.buffer(100);
+
+  var firesInArea = firesAll.filterBounds(area100);
+  var totalFires  = firesInArea.size();
+
+  // ---- per-year counts: fires_2020 ... fires_2024 ----
+  var keys = YEARS.map(function(y){ y = ee.Number(y); return ee.String('fires_').cat(y.format()); });
+  var vals = YEARS.map(function(y){
+    y = ee.Number(y);
+    return firesInArea.filter(ee.Filter.eq('year', y)).size();
+  });
+  var perYearCounts = ee.Dictionary.fromLists(keys, vals);
+
+  // ---- per-year average confidence and labels ----
+  var meanKeys = YEARS.map(function(y){ y=ee.Number(y); return ee.String('avg_conf_0to2_').cat(y.format()); });
+  var labelKeys = YEARS.map(function(y){ y=ee.Number(y); return ee.String('avg_conf_label_').cat(y.format()); });
+
+  var meanVals = YEARS.map(function(y){
+    y = ee.Number(y);
+    var subset = firesInArea.filter(ee.Filter.eq('year', y));
+    var has    = subset.size().gt(0);
+    return ee.Number(ee.Algorithms.If(has, subset.aggregate_mean('conf_num'), null));
+  });
+
+  var labelVals = ee.List(meanVals).map(function(m){ return labelFromMean(m); });
+
+  var perYearMeans  = ee.Dictionary.fromLists(meanKeys,  meanVals);
+  var perYearLabels = ee.Dictionary.fromLists(labelKeys, labelVals);
+
+  // ---- overall average confidence and label ----
+  var avgConfAll = ee.Number(ee.Algorithms.If(totalFires.gt(0), firesInArea.aggregate_mean('conf_num'), null));
+  var avgConfLabelAll = labelFromMean(avgConfAll);
+
+  // ---- fire TYPEs present across all years (codes + descriptions) ----
+  var typeCodes = ee.List(firesInArea.aggregate_array(TYPE_FIELD))
+                    .removeAll([null]).distinct().sort();
+  var typesCSV  = ee.String(ee.Algorithms.If(typeCodes.size().gt(0), typeCodes.join(','), ''));
+  var typeDescCSV = ee.String(
+    ee.Algorithms.If(typeCodes.size().gt(0),
+      typeCodes.map(function(t){ return TYPE_DESC.get(ee.String(ee.Number(t).format('%.0f'))); }).join('; '),
+      ''
+    )
+  );
+
+  return site.set(perYearCounts)
+             .set(perYearMeans)
+             .set(perYearLabels)
+             .set({
+               fire_detected_within_poly_plus_100m_anyyear: totalFires.gt(0),
+               fires_total_2020_2024_within_poly_plus_100m: totalFires,
+               avg_conf_0to2_all_years: avgConfAll,
+               avg_conf_label_all_years: avgConfLabelAll,
+               types_present_csv: typesCSV,
+               type_descriptions_csv: typeDescCSV
+             });
+}
+
+var results = dumpsites.map(analyze);
+
+/*************** VISUALISATION ****************/
+Map.centerObject(dumpsites, 7);
+
+// polygons
+Map.addLayer(
+  dumpsites.style({ color: 'red', fillColor: '00000000', width: 2 }),
+  {},
+  'Dumpsite polygons'
+);
+
+// buffers (100 m)
+var buffers = dumpsites.map(function(f){
+  return ee.Feature(f.geometry().buffer(100))
+           .set({style:{color:'orange', fillColor:'33FFA500', width:2}});
+});
+Map.addLayer(buffers.style({styleProperty:'style'}), {}, 'Polygon + 100 m buffer');
+
+// fire points by confidence
+var fireVis = firesAll.map(function(f) {
+  var conf = ee.Number(f.get('conf_num'));
+  var color = ee.Algorithms.If(conf.eq(2), 'red',
+                ee.Algorithms.If(conf.eq(1), 'orange',
+                  ee.Algorithms.If(conf.eq(0), 'yellow', 'gray')));
+  return f.set('style', {color: color, pointSize: 3, pointShape: 'circle'});
+});
+Map.addLayer(fireVis.style({styleProperty:'style'}), {}, 'Fires 2020–2024 (by confidence)');
+
+/*************** EXPORT ****************/
+Export.table.toDrive({
+  collection: results,
+  description: 'Dumpsites_Fire_2020_2024_WGS84',
+  fileFormat: 'CSV'
+});

@@ -1,0 +1,75 @@
+/*************** LOAD DATA ****************/
+
+//Upload raster available at: https://human-settlement.emergency.copernicus.eu/download.php?ds=pop
+
+// Load dumpsite points and update the file path according to your working directory (replace 'user' with your own directory name) 
+
+var dumpsites = ee.FeatureCollection("projects/user/assets/Dumpsites_additional_DataPoints");
+
+// Load population raster (Mollweide, 1km) (replace 'user' with your own directory name) 
+var population = ee.Image("projects/user/assets/GHS_POP_E2020_GLOBE_R2023A_54009_100_V1_0");
+
+// Optional: check band names
+print('Bands:', population.bandNames());
+
+// Keep only valid (>= 0) population values
+var validPopulation = population.updateMask(population.gte(0));
+
+// Reproject image to WGS84
+var imageWGS84 = validPopulation.reproject({
+  crs: 'EPSG:4326',
+  scale: 100
+});
+// ----- Parameters -----
+var bufferDistance = 10000; // 10 km
+var scale = 100;            // meters
+
+// Function to calculate ONLY the population sum within 10 km
+var addPopulationSum = function(feature) {
+  var buffered = feature.buffer(bufferDistance);
+
+  // Sum population inside buffer; default to 0 if no pixels
+  var popDict = validPopulation.reduceRegion({
+    reducer: ee.Reducer.sum(),
+    geometry: buffered.geometry(),
+    scale: scale,
+    crs: population.projection(),
+    maxPixels: 1e10
+  });
+
+  var popSum = ee.Number(ee.Dictionary(popDict).get('b1', 0));
+
+  return feature
+    .set('population_sum_10km', popSum)
+    .set('buffer_m', bufferDistance);
+};
+
+// Apply the population-sum calculation
+var withPopulation = dumpsites.map(addPopulationSum);
+
+// ---- Visualisation ----
+Map.centerObject(dumpsites, 6);
+
+// Population raster (optional display)
+Map.addLayer(validPopulation, {
+  min: 0,
+  max: 340000,
+  palette: ['purple']
+}, 'Population (valid)');
+
+// 10 km buffers (red outline only)
+var buffers = dumpsites.map(function(f) {
+  return ee.Feature(f.buffer(bufferDistance));
+});
+Map.addLayer(buffers.style({color: 'red', fillColor: '00000000'}), {}, '10 km Buffers');
+
+// Dumpsite points
+Map.addLayer(dumpsites, {color: 'red'}, 'Dumpsite Locations');
+
+// ---- Export to Drive (CSV with sums) ----
+Export.table.toDrive({
+  collection: withPopulation,
+  description: 'PopulationSum_10km_F',
+  fileFormat: 'CSV'
+});
+

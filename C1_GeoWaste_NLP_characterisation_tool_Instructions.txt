@@ -1,0 +1,52 @@
+### C1_GeoWaste_NLP_characterisation_tool Instructions
+## How to Use C1_GeoWaste_NLP_characterisation_tool
+This Python script automates the  analysis of publicly available data related to waste dumpsites using Natural Language Processing (NLP) and web scraping. The approach is structured around four main steps:
+
+1️⃣ **Clone the Repository**
+```bash
+git clone [https://github.com/YourUsername/GeoWaste_Database.git](https://github.com/AmaniMaalouf/GeoWaste_Database)
+cd nlp_GeoWaste-Database
+```
+
+2️⃣ **Install Requirements**
+```
+#The required Python packages are listed in the `nlp_code_requirements.py` file.  
+
+pip install -r nlp_code_requirements.py
+
+```
+> 📌 Make sure [ChromeDriver](https://chromedriver.chromium.org/) is installed and matches your Chrome version.
+
+3️⃣ **Run the Analysis**
+```bash
+# Usage:
+python nlp_GeoWaste-Database.py <api_key> <dumpsite_name> <city> <country> <model>
+
+# Example:
+python nlp_geoWaste-database_code.py sk-abc123 Koshe "Addis Ababa" Ethiopia gpt-4
+```
+**Parameters:**
+- `api_key`: Your [OpenAI API key](https://platform.openai.com/account/api-keys)  
+- `dumpsite_name`, `city`, `country`: Location of the dumpsite  
+- `model`: OpenAI model to use (e.g., `gpt-3.5-turbo`, `gpt-4`)
+
+✅ **Output Files:**
+- `extracted_texts.pdf` – Cleaned and compiled source content  
+- `Excel_Output/<name>_<model>.xlsx` – Structured insights answering 37 key dumpsite questions
+
+The tool combines web scraping, LLM analysis, and reporting into one automated workflow.
+
+### Workflow Overview
+
+1. **Web Scraping**  
+   Performs automated Google search based on user-provided dumpsite details (name, city, country). Extracts text content from relevant online sources using Selenium.
+
+2. **Text Extraction & Cleaning**  
+   Cleans raw HTML content and extracts meaningful text using BeautifulSoup. Compiles the extracted information into a structured format.
+
+3. **PDF Report Generation**  
+   Converts extracted text into a formatted PDF file (`extracted_texts.pdf`) using ReportLab.
+
+4. **LLM-Powered Q&A Extraction**  
+   Utilises OpenAI's GPT models (via LlamaIndex) to answer 37 structured questions about the dumpsite—covering ownership, operations, environmental and social impact, and more. Outputs results in an Excel file.
+

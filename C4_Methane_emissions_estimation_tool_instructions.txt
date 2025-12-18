@@ -1,0 +1,25 @@
+### How to use the C4_Methane_emissions_estimation_tool
+
+This Python script calculates total methane (CH₄) emissions from waste decomposition based on input parameters. It is designed to be executed in a **Google Colab** environment and reads user-uploaded Excel files as input.
+
+#### 1️⃣ Open in Google Colab  
+This script is built for Google Colab. [Click here to open Colab](https://colab.research.google.com) and paste or upload the script.
+
+#### 2️⃣ Prepare Your Input File  
+Upload an Excel file (e.g., `inputs.xlsx`)
+You will be prompted to upload this file when running the script.
+
+#### 3️⃣ What the Script Does
+- Calculates CH₄ emissions over a **100-year** simulation period using a first-order decay model.
+- For each row in the input, the script computes:
+  - Biodegradable waste
+  - Methane generation per year
+  - Cumulative methane emissions
+- Outputs a new Excel file with an added column: `Total_CH4`.
+
+#### ✅ Output File
+After processing, an output Excel file (`output.xlsx`) will be automatically downloaded, containing:
+- All original columns
+- A new column: `Total_CH4` (total methane emissions in Gg per entry)
+---
+

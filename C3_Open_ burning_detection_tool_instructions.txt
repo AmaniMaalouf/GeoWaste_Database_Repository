@@ -1,0 +1,51 @@
+##Overview
+
+This Google Earth Engine (GEE) script detects and characterises open burning at municipal solid waste dumpsites using satellite-based active fire observations. The workflow integrates dumpsite polygon geometries with VIIRS active fire point detections to identify fire activity occurring at or near dumpsites.
+
+##What the script does
+
+- Loads dumpsite polygon geometries into Google Earth Engine
+- Loads VIIRS active fire point collections for the period 2020–2024
+- Converts VIIRS fire-confidence classes (L, N, H) to numeric scores
+- Computes per-dumpsite fire statistics within a 100 m buffer, including:
+	- Fire-detection counts
+	- Mean confidence level
+	- Annual and multi-year summaries
+	- Visualises dumpsite polygons, buffers, and fire detections in the GEE map interface
+- Exports a CSV file containing enriched dumpsite attributes to Google Drive
+
+##Data availability
+
+VIIRS active fire data are available from the NASA Fire Information for Resource Management System (FIRMS):
+https://firms.modaps.eosdis.nasa.gov/download/
+
+##Data specifications
+
+- Data source: VIIRS J1 (NOAA-20/JPSS-1), Collection 2
+- Start date: 2024-01-01
+- End date: 2024-12-31
+- Area of interest: Global
+- Bounding box: -180, -90, 180, 90
+- Output format: Shapefile (.shp)
+- Units: Not applicable
+
+##Inputs
+
+- Dumpsite polygons: User-uploaded shapefile stored as a GEE asset
+- VIIRS active fire detections: Shapefile downloaded from FIRMS and uploaded to GEE
+
+##Outputs
+
+- Presence of open burning (yes/no)
+- Fire-detection count
+- Mean VIIRS confidence level
+- Annual and multi-year fire statistics
+- Outputs are exported as a CSV file to the user’s Google Drive.
+
+##Instructions
+
+- Upload dumpsite polygon shapefiles to Google Earth Engine
+- Download VIIRS J1 active fire data from FIRMS and upload the shapefile to GEE
+- Copy and paste the code into the GEE Code Editor
+- Update file paths and asset IDs as required
+- Run the script

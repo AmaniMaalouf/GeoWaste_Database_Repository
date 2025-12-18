@@ -50,7 +50,7 @@ A Python tool, implemented in Google Colab, for estimating methane emissions fro
 ---
 ## License
 
-This project is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License].  
+This work is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License].  
 See the (LICENSE) file for details.
 
 ---

@@ -1,0 +1,38 @@
+OVERVIEW
+This Google Earth Engine (GEE) script estimates the population speculated to be potentially affected
+by municipal solid waste dumpsites for an indicative and arbitrary radius of 10 km and calculated using gridded population data.
+
+WHAT THE SCRIPT DOES
+- Loads dumpsite CSV datapoints in Google Earth Engine
+- Loads the Global Human Settlement Layer (GHSL) population raster
+- Computes population counts within an indicative and arbitrary buffer around each dumpsite
+
+DATA AVAILABILITY
+- The dataset is available at:
+  https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php
+- Direct download link:
+  https://human-settlement.emergency.copernicus.eu/download.php?ds=pop
+
+DATA SPECIFICATIONS
+- Data source: GHSL – Global Human Settlement Layer
+- Product: GHS POPULATION GRID (R2023)
+- Epoch: 2020
+- Resolution: 100 m
+- Coordinate system: Mollweide
+- Unit: Count
+
+INPUTS
+- CSV datapoints uploaded to Google Earth Engine
+- GHSL population raster uploaded to Google Earth Engine
+
+OUTPUTS
+- Population counts within the defined buffer for each dumpsite
+- Outputs are exported as a CSV file to Google Drive
+
+INSTRUCTIONS
+- Upload CSV datapoints in Google Earth Engine
+- Download the dataset from:
+  https://human-settlement.emergency.copernicus.eu/ghs_pop2023.php
+- Upload raster data to Google Earth Engine
+- Change the file paths for all inputs
+- Run the code

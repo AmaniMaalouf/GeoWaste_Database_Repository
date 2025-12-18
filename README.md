@@ -48,21 +48,6 @@ A Python tool, implemented in Google Colab, for estimating methane emissions fro
 - Outputs **annual CH₄ emissions over 100 years**.
 
 ---
-
-
-
-
-POPULATION
-Upload raster available at: https://human-settlement.emergency.copernicus.eu/download.php?ds=pop
-
-Selection criteria:
-- Product: GHS_POP
-- Epoch: 2020
-- Resolution: 100m
-- Coordinate system: Mollweide
-
-
----
 ## License
 
 This project is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License].  

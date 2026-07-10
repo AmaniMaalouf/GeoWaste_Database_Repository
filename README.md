@@ -1,8 +1,8 @@
 # GeoWaste Database Repository
-This repository provides open-source tools supporting the GeoWaste database: a global framework for mapping and characterising major waste dumpsites using AI, geospatial analysis, and methane emissions modelling.
+This repository provides open-source tools supporting the GeoWaste database for global mapping and characterisation of major dumpsites using AI, geospatial analysis, and methane emissions modelling.
 It contains four codes supporting the study:
 
-**"GeoWaste database: a global framework for mapping and characterising major dumpsites"**  
+**"GeoWaste database for global mapping and characterisation of major dumpsites"**  
 by *Maalouf et al. (2026)*
 
 ---
@@ -61,8 +61,8 @@ Find the published paper [here](Journal info will be added once published).
 If you use any code, please cite:
 
 > **Proposed citation:**
-> > Maalouf, A., Reese, S., Christiaen, C., Caldecott, B. (2026)  
-> *GeoWaste database: a global framework for mapping and characterising major dumpsites.*  
+> > Maalouf et al. (2026)  
+> *GeoWaste database for global mapping and characterisation of major dumpsites.*  
 > *(Journal info will be added once published)*
 
 

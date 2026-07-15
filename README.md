@@ -1,29 +1,45 @@
 # GeoWaste Database Repository
-This repository provides open-source tools supporting the GeoWaste database for global mapping and characterisation of major dumpsites using AI, geospatial analysis, and methane emissions modelling.
-It contains four codes supporting the study:
+
+This repository provides open access to the GeoWaste database together with the accompanying open-source tools developed to support the global mapping and characterisation of major dumpsites using AI, geospatial analysis, satellite-based open-burning detection, and methane emissions modelling.
+
+These materials support the study:
 
 **"GeoWaste database for global mapping and characterisation of major dumpsites"**  
-by *Maalouf et al. (2026)*
+*Maalouf et al. (2026)*
+
+**The repository contains:**
+
+- **GeoWaste database** – global site-level database of 200 major active dumpsites.
+- **C1. GeoWaste NLP characterisation tool** – AI-assisted extraction of dumpsite characteristics from publicly available sources.
+- **C2. Potentially affected population tool**– Estimates the population potentially affected around each dumpsite.
+- **C3. Open burning detection tool**– Detects open burning at dumpsites using satellite observations.
+- **C4. Methane emissions estimation tool** – Estimates site-level methane emissions using the IPCC methodologies.
 
 ---
 
-## About
-GeoWaste provides a transparent, reproducible, site-level methodological framework for identifying and characterising uncontrolled waste disposal sites (“dumpsites”) at global scale. The workflow integrates artificial intelligence–assisted text analysis, geospatial analysis, satellite-based detection of open burning, and site-level methane emissions modelling.
-
 > ⚠️ **IMPORTANT**
 
-If you use any part of these codes, please **cite the paper** (Maalouf et al., 2026). 
+If you use the GeoWaste database or any of the accompanying code, please **cite the associated publication** (Maalouf et al., 2026). 
 - The database and presented codes were developed by *Dr. Amani Maalouf*.
 - Please contact Dr Amani Maalouf [amani.maalouf@smithschool.ox.ac.uk](mailto:amani.maalouf@smithschool.ox.ac.uk) to inform us about any errors, omissions or other feedback.
 - For a detailed walkthrough of the methodology and analysis, please refer to the **Supplementary Information** provided in the paper.
 
 ---
 
-## Repository Contents
+## Repository components
+
+### **GeoWaste Database**
+
+GeoWaste is an open-access, site-level database of major uncontrolled waste disposal sites ("dumpsites") worldwide. The database was developed through a transparent and reproducible workflow integrating AI-assisted text analysis, geospatial analysis, satellite-based detection of open burning, and site-level methane emissions modelling for the global mapping and characterisation of major dumpsites.
+
+#### Current version
+
+Version 3.0
+Released: July 2026
 
 ### **C1. GeoWaste NLP characterisation tool**
 
-An AI-powered approach using Python, implemented in Google Colab, for characterising dumpsite based on precise geolocations and extracting relevant data.
+An AI-powered approach using Python, implemented in Google Colab, for characterising individual dumpsites based on precise geolocations and extracting relevant data.
 - Involves **web scraping**, **text extraction**, **PDF generation**, and **data analysis**.
 - Uses **OpenAI GPT-4** for processing and interpretation.
 - Outputs results (attributes related to the dumpsite location) in an Excel file.
@@ -58,7 +74,7 @@ See the (LICENSE) file for details.
 
 Find the published paper [here](Journal info will be added once published).  
 
-If you use any code, please cite:
+If you use the GeoWaste database or any of the accompanying code, please cite:
 
 > **Proposed citation:**
 > > Maalouf et al. (2026)  

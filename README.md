@@ -34,14 +34,16 @@ GeoWaste is an open-access, site-level database of major uncontrolled waste disp
 
 #### Current version
 
-Version 3.0
-Released: July 2026
+**Version:** 3.0  
+**Released:** July 2026
 
 #### Format
-The GeoWaste database is provided as a Microsoft Excel (.xlsx) workbook. Individual sheets or columns can be exported as CSV. 
+
+The GeoWaste database is provided as a Microsoft Excel (`.xlsx`) workbook. Individual sheets or columns can be exported as CSV.
 
 #### Usage
-The dataset can be opened in standard spreadsheet software or imported into Python-based workflows using commonly used libraries such as pandas or geopandas, enabling further statistical, geospatial, or visual analysis.
+
+The dataset can be opened in standard spreadsheet software or imported into Python workflows using libraries such as `pandas` and `geopandas` for statistical, geospatial, and visual analysis.
 
 ### **C1. GeoWaste NLP characterisation tool**
 
